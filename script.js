@@ -1,3 +1,4 @@
+
 const map = L.map('map').setView([51.32, -0.14], 10); // Coulsdon area
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -14,8 +15,19 @@ const getRadarUrls = async () => {
 
   for (let i = 0; i < 6; i++) {
     const time = new Date(now.getTime() - i * 5 * 60 * 1000).toISOString();
-    const url = `${baseUrl}?time=${time}&resolution=1km&format=png`;
-    urls.push(url);
+    const response = await fetch(`${baseUrl}?time=${time}&resolution=1km&format=png`, {
+      headers: {
+        'x-ibm-client-id': apiKey
+      }
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      urls.push(imageUrl);
+    } else {
+      console.error(`Failed to fetch radar image for ${time}`);
+    }
   }
 
   return urls;
