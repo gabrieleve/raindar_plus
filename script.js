@@ -5,11 +5,27 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Prompt user for API key and order ID
-const apiKey = prompt("Enter your Met Office API key:");
-const orderId = prompt("Enter your Met Office order ID:");
+// Prompt user for API key and order ID sequentially
+let apiKey = '';
+let orderId = '';
 
-const baseUrl = `https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/orders/${orderId}/latest/map-images/precipitation-rate`;
+window.onload = async () => {
+  apiKey = prompt("Please enter your Met Office API key:");
+  if (!apiKey) {
+    alert("API key is required.");
+    return;
+  }
+
+  orderId = prompt("Please enter your Met Office Order ID:");
+  if (!orderId) {
+    alert("Order ID is required.");
+    return;
+  }
+
+  await displayRadar();
+};
+
+const baseUrl = 'https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/map-images/precipitation-rate';
 
 const getRadarUrls = async () => {
   const now = new Date();
@@ -17,24 +33,18 @@ const getRadarUrls = async () => {
 
   for (let i = 0; i < 6; i++) {
     const time = new Date(now.getTime() - i * 5 * 60 * 1000).toISOString();
-    const url = `${baseUrl}?time=${time}&resolution=1km&format=png`;
-
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'x-ibm-client-id': apiKey
-        }
-      });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const imageUrl = URL.createObjectURL(blob);
-        urls.push(imageUrl);
-      } else {
-        console.error(`Failed to fetch radar image for ${time}: ${response.status}`);
+    const response = await fetch(`${baseUrl}?time=${time}&resolution=1km&format=png&orderId=${orderId}`, {
+      headers: {
+        'x-ibm-client-id': apiKey
       }
-    } catch (error) {
-      console.error(`Error fetching radar image for ${time}:`, error);
+    });
+
+    if (response.ok) {
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      urls.push(imageUrl);
+    } else {
+      console.error(`Failed to fetch radar image for ${time}`);
     }
   }
 
@@ -50,5 +60,3 @@ const displayRadar = async () => {
     }).addTo(map);
   });
 };
-
-displayRadar();
