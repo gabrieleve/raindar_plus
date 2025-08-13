@@ -6,34 +6,25 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Prompt user for API key and order ID in a single input
-const credentials = prompt("Enter your Met Office API key and order ID separated by a comma (e.g., abc123,order456):");
-if (!credentials || !credentials.includes(",")) {
-  alert("Invalid input. Please enter both API key and order ID separated by a comma.");
-  throw new Error("Missing credentials");
-}
-
-const [apiKey, orderId] = credentials.split(",").map(s => s.trim());
-const baseUrl = `https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/orders/${orderId}/map-images/precipitation-rate`;
+const apiKey = prompt("Enter your Met Office API key:");
+const orderId = "o224043244432"
+const fileId = "total_precipitation_rate_ts0_+00"
+const baseUrl = `https://data.hub.api.metoffice.gov.uk/map-images/1.0.0/${orderId}/latest/${fileId}`;
 
 const getRadarUrls = async () => {
-  const now = new Date();
   const urls = [];
-
-  for (let i = 0; i < 6; i++) {
-    const time = new Date(now.getTime() - i * 5 * 60 * 1000).toISOString();
-    const response = await fetch(`${baseUrl}?time=${time}&resolution=1km&format=png`, {
-      headers: {
-        'x-ibm-client-id': apiKey
-      }
-    });
-
-    if (response.ok) {
-      const blob = await response.blob();
-      const imageUrl = URL.createObjectURL(blob);
-      urls.push(imageUrl);
-    } else {
-      console.error(`Failed to fetch radar image for ${time}`);
+  const response = await fetch(`${baseUrl}`, {
+    headers: {
+      'apikey': apiKey
     }
+  });
+
+  if (response.ok) {
+    const blob = await response.blob();
+    const imageUrl = URL.createObjectURL(blob);
+    urls.push(imageUrl);
+  } else {
+    console.error(`Failed to fetch radar image`);
   }
 
   return urls;
