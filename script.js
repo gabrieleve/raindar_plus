@@ -15,7 +15,7 @@ const getRadarUrls = async () => {
   const urls = [];
   const response = await fetch(`${baseUrl}`, {
     headers: {
-      'accept': 'application/json'
+      'accept': "application/x-grib"
       'apikey': apiKey
     }
   });
