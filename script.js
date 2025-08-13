@@ -5,27 +5,15 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Prompt user for API key and order ID sequentially
-let apiKey = '';
-let orderId = '';
+// Prompt user for API key and order ID in a single input
+const credentials = prompt("Enter your Met Office API key and order ID separated by a comma (e.g., abc123,order456):");
+if (!credentials || !credentials.includes(",")) {
+  alert("Invalid input. Please enter both API key and order ID separated by a comma.");
+  throw new Error("Missing credentials");
+}
 
-window.onload = async () => {
-  apiKey = prompt("Please enter your Met Office API key:");
-  if (!apiKey) {
-    alert("API key is required.");
-    return;
-  }
-
-  orderId = prompt("Please enter your Met Office Order ID:");
-  if (!orderId) {
-    alert("Order ID is required.");
-    return;
-  }
-
-  await displayRadar();
-};
-
-const baseUrl = 'https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/map-images/precipitation-rate';
+const [apiKey, orderId] = credentials.split(",").map(s => s.trim());
+const baseUrl = `https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/orders/${orderId}/map-images/precipitation-rate`;
 
 const getRadarUrls = async () => {
   const now = new Date();
@@ -33,7 +21,7 @@ const getRadarUrls = async () => {
 
   for (let i = 0; i < 6; i++) {
     const time = new Date(now.getTime() - i * 5 * 60 * 1000).toISOString();
-    const response = await fetch(`${baseUrl}?time=${time}&resolution=1km&format=png&orderId=${orderId}`, {
+    const response = await fetch(`${baseUrl}?time=${time}&resolution=1km&format=png`, {
       headers: {
         'x-ibm-client-id': apiKey
       }
@@ -60,3 +48,5 @@ const displayRadar = async () => {
     }).addTo(map);
   });
 };
+
+displayRadar();
