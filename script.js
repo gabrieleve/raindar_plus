@@ -9,11 +9,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const apiKey = prompt("Enter your Met Office API key:");
 const orderId = "o224043244432"
 const fileId = "total_precipitation_rate_ts0_+00"
-const baseUrl = `https://data.hub.api.metoffice.gov.uk/map-images/1.0.0/orders/${orderId}/latest/${fileId}`;
+const baseUrl = `https://data.hub.api.metoffice.gov.uk/map-images/1.0.0/orders/${orderId}/latest/${fileId}/data`;
 
 const getRadarUrls = async () => {
   const urls = [];
-  const response = await fetch(`${baseUrl}`, {
+  const response = await fetch(baseUrl, {
     headers: {
       'accept': "application/x-grib"
       'apikey': apiKey
