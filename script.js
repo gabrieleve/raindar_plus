@@ -4,7 +4,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your Met Office API key
+// Prompt user for API key
+const apiKey = prompt("Please enter your Met Office API key:");
 const baseUrl = 'https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/map-images/precipitation-rate';
 
 const getRadarUrls = async () => {
