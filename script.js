@@ -14,6 +14,7 @@ const baseUrl = `https://data.hub.api.metoffice.gov.uk/map-images/1.0.0/orders/$
 const getRadarUrls = async () => {
   const urls = [];
   const response = await fetch(baseUrl, {
+    method: 'GET',
     headers: {
       'accept': "application/x-grib",
       'apikey': apiKey
