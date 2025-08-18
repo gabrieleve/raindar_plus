@@ -37,7 +37,7 @@ const displayRadar = async () => {
 
   urls.forEach((url, index) => {
     const overlay = L.imageOverlay(url, [[49, -11], [60, 2]], {
-      opacity: 0.3 + index * 0.1
+      opacity: 0.9
     }).addTo(map);
     map.fitBounds(imageBounds);
   });
